@@ -8,6 +8,7 @@ const {
 const ytdl = require("ytdl-core");
 const ytSearch = require("yt-search");
 const { EmbedBuilder } = require("discord.js");
+const { spawn } = require("child_process");
 
 require("dotenv/config");
 
@@ -126,20 +127,32 @@ function playNext(channel) {
 
   const next = queue[0];
 
-  const stream = ytdl(next.url, {
-    filter: "audioonly",
-    quality: "highestaudio",
-    highWaterMark: 1 << 25,
-  });
+  const stream = spawn("yt-dlp", [
+    "-f",
+    "bestaudio",
+    "--no-playlist",
+    "-o",
+    "-", // output to stdout
+    next.url,
+  ]);
 
-  const resource = createAudioResource(stream);
+  const resource = createAudioResource(stream.stdout);
   player.play(resource);
+
   if (channel) {
     channel.send(`playing: **${next.title}**`);
     lastChannel = channel;
   } else if (lastChannel) {
     lastChannel.send(`playing: **${next.title}**`);
   }
+
+  stream.stderr.on("data", (data) => {
+    console.error(`yt-dlp error: ${data}`);
+  });
+
+  stream.on("error", (err) => {
+    console.error("Failed to start yt-dlp:", err);
+  });
 }
 
 player.on(AudioPlayerStatus.Idle, () => {
