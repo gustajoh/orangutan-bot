@@ -308,6 +308,7 @@ function printCommands(channel) {
               "**!skip** — skip the current song",
               "**!queue** — show the queue",
               "**!mixtra** `pos1 pos2` — swap two queued songs",
+              "**!session** - show all queued tracks in session",
               "**!help** — show this message",
             ].join("\n"),
           ),
