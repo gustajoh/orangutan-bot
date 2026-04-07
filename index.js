@@ -102,8 +102,11 @@ client.on("messageCreate", async (message) => {
 
   switch (cmd) {
     case "!skip":
-      if (queue.length) queue.shift();
-      playNext(message.channel);
+      handleSkip(message.channel);
+      return;
+
+    case "!remove":
+      handleRemove(message, args);
       return;
 
     case "!queue":
@@ -132,6 +135,11 @@ client.on("messageCreate", async (message) => {
       return;
   }
 });
+
+function handleSkip(channel) {
+  if (queue.length) queue.shift();
+  playNext(channel);
+}
 
 async function handlePlay(message, query) {
   if (!query) {
@@ -169,6 +177,23 @@ async function handlePlay(message, query) {
     try {
       await message.reply("play error");
     } catch {}
+  }
+}
+
+function handleRemove(message, args) {
+  let index = Number(args[0]) - 1;
+
+  if (isNaN(index) || queue[index] === undefined) {
+    message.reply("bad index");
+    return;
+  }
+
+  if (index === 0) {
+    handleSkip(message.channel);
+    return;
+  } else {
+    queue.splice(index, 1);
+    printQueue(message.channel);
   }
 }
 
