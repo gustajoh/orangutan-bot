@@ -331,6 +331,7 @@ function printCommands(channel) {
             [
               "**!spela** `song/url` — play or queue a song",
               "**!skip** — skip the current song",
+              "**!remove `i`** - remove song from queue",
               "**!queue** — show the queue",
               "**!mixtra** `pos1 pos2` — swap two queued songs",
               "**!session** - show all queued tracks in session",
